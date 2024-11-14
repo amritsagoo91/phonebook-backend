@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 
+
 let persons =
     [
         {
@@ -24,6 +25,14 @@ let persons =
             "number": "39-23-6423122"
         }
     ]
+
+app.use(express.json())
+const generateId = () => {
+    const maxId = persons.length > 0
+        ? Math.max(...persons.map(n => Number(n.id)))
+        : 0
+    return String(maxId + 1)
+}
 
 app.get('/persons', (req, res) => {
     res.json(persons)
@@ -56,3 +65,22 @@ const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Server running in port ${PORT}`)
 })
+
+app.post('/persons', (req, res) => {
+    const body = req.body;
+
+
+    if (!body.name || !body.number) {
+        return res.status(400).json({ error: 'Name or number missing' });
+    }
+
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generateId()
+    };
+    persons = persons.concat(person)
+    res.status(201).json(person);
+});
+
