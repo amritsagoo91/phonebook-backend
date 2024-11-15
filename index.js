@@ -28,11 +28,13 @@ let persons =
 
 app.use(express.json())
 const generateId = () => {
-    const maxId = persons.length > 0
-        ? Math.max(...persons.map(n => Number(n.id)))
-        : 0
-    return String(maxId + 1)
-}
+    let uniqueId;
+    do {
+        uniqueId = Math.floor(Math.random() * 1000000);
+    } while (persons.some(person => person.id === uniqueId));
+
+    return uniqueId;
+};
 
 app.get('/persons', (req, res) => {
     res.json(persons)
@@ -68,18 +70,23 @@ app.listen(PORT, () => {
 
 app.post('/persons', (req, res) => {
     const body = req.body;
-
+    const findName = persons.find(person => person.name === body.name);
 
     if (!body.name || !body.number) {
         return res.status(400).json({ error: 'Name or number missing' });
     }
-
+    if (findName) {
+        return res.status(400).json({ error: "Name must be unique" })
+    }
 
     const person = {
         name: body.name,
         number: body.number,
         id: generateId()
     };
+
+
+
     persons = persons.concat(person)
     res.status(201).json(person);
 });
