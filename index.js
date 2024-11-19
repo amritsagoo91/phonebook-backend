@@ -1,5 +1,12 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
+
+app.use(express.json())
+
+
+
+app.use(morgan('tiny'))
 
 
 let persons =
@@ -26,17 +33,17 @@ let persons =
         }
     ]
 
-app.use(express.json())
+
 const generateId = () => {
     let uniqueId;
     do {
-        uniqueId = Math.floor(Math.random() * 1000000);
+        uniqueId = (Math.floor(Math.random() * 1000000)).toString();
     } while (persons.some(person => person.id === uniqueId));
 
     return uniqueId;
 };
 
-app.get('/persons', (req, res) => {
+app.get('/api/persons', (req, res) => {
     res.json(persons)
 
 })
@@ -45,7 +52,7 @@ app.get('/info', (req, res) => {
     res.send(`<p>Phonebook has info for ${persons.length} people <br><p>${Date()}</p>`)
 })
 
-app.get('/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res) => {
     const id = req.params.id;
     const person = persons.find(person => person.id === id)
     if (person) {
@@ -55,7 +62,7 @@ app.get('/persons/:id', (req, res) => {
     }
 })
 
-app.delete('/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res) => {
     const id = req.params.id;
     persons = persons.filter(person => person.id !== id);
     res.status(204).end();
@@ -68,7 +75,7 @@ app.listen(PORT, () => {
     console.log(`Server running in port ${PORT}`)
 })
 
-app.post('/persons', (req, res) => {
+app.post('/api/persons', (req, res) => {
     const body = req.body;
     const findName = persons.find(person => person.name === body.name);
 
