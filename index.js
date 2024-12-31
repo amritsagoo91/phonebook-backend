@@ -87,18 +87,15 @@ app.get('/api/persons/:id', (req, res) => {
     }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-    const id = req.params.id;
-    persons = persons.filter(person => person.id !== id);
-    res.status(204).end();
+// app.delete('/api/persons/:id', (req, res) => {
+//     const id = req.params.id;
+//     persons = persons.filter(person => person.id !== id);
+//     res.status(204).end();
 
-})
+// })
 
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server running in port ${PORT}`)
-})
+
 
 app.post('/api/persons', (req, res) => {
     const body = req.body;
@@ -121,4 +118,23 @@ app.post('/api/persons', (req, res) => {
     { /*   persons = persons.concat(person)
     res.status(201).json(person);*/}
 });
+
+app.delete('/api/persons/:id', (req, res) => {
+    Person.findByIdAndDelete(req.params.id)
+        .then(result => {
+            if (result) {
+                res.status(200).send({ message: `${result.name} deleted successfully` });
+            } else {
+                res.status(404).send({ error: 'Person not found' });
+            }
+        })
+        .catch(error => {
+            res.status(500).send({ error: 'Internal server error' });
+        });
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server running in port ${PORT}`)
+})
 
