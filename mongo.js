@@ -14,7 +14,11 @@ const url = `mongodb+srv://user_1:${password}@cluster0.vcdii.mongodb.net/phonebo
 mongoose.set('strictQuery', false)
 
 const personSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
     number: String,
 })
 
